@@ -100,3 +100,5 @@ Note : PID is a variable that stores the process id of the twitterserver (referr
 
 ## Output
 Below are sample outputs when executed through the simulator. 
+
+<img width="474" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/2f099287-5b97-499e-8420-3897735012b2">
