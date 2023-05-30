@@ -1,9 +1,8 @@
 
-#### 
 #### Course : COP5615 - Distributed Operating Systems Principles
 
 # TwitterClone 
-Distributed Twitter-like engine that simulates various functionalities such as registering accounts, sharing tweets, and querying tweets based on hashtags, mentions and user profiles
+Distributed Twitter-like engine that simulates various functionalities such as registering accounts, sharing tweets, and querying tweets based on hashtags, mentions and user profiles. 
 
 ## Problem Statement
 
@@ -22,7 +21,7 @@ Part 2 :
 *  Send tweet. Tweets can have hashtags (e.g. #topic) and mentions (@bestuser)
 *  Subscribe to user's tweets
 *  Re-tweets 
-*	 Display the new tweets by subscribed users live (without querying).  
+*  Display the new tweets by subscribed users live (without querying).  
 *  Allow querying tweets subscribed to, tweets with specific hashtags, tweets in which the user is mentioned
 
 ## System
@@ -82,6 +81,32 @@ simulator:search(PID, "hashtag", "user4", "#topic").
 Note : PID is a variable that stores the process id of the twitterserver (referred as the server). During initalization, the function start_server() returns the process id. Refer command {Link}
 
 ## Implementation
+TwitterClone is a system designed to mimic the functionality of Twitter. It follows the Actor model paradigm, where each user profile is treated as an independent actor referred to as the client. The system includes a main engine acting as a server that keeps track of user profile names and their associated process IDs. To create a realistic simulation of the Twitter engine, a simulator engine is implemented. The simulator replicates the actions performed on a regular Twitter platform and invokes the backend functions of the client actors to simulate different actions. This simulator is useful for measuring performance metrics and scaling out the Twitter engine by generating a large number of users in bulk.
+
+##### What is the actor model?
+The actor model is a programming paradigm that provides a conceptual framework for building concurrent and distributed systems. In the actor model, an actor represents a fundamental unit of computation. Each actor encapsulates its own state, behavior, and communication mechanism. Actors can asynchronously send messages to other actors, receive messages, and modify their internal state based on incoming messages. Actors cannot access each others data or state, they can only share information through messages. 
+
+##### Responsibilites of each Actor/process
+Server Engine
+1. Keep track of registered accounts
+2. Keeps track of tweets    
+    a. map for key:hashtag ; value:list of tweets with that hashtag and the tweeter’s usernames    
+    b. map for key:mention ; value:list of tweets with that mention and the tweeter’s usernames     
+3. Responds to client requests for search queries, allowing users to search for specific hashtags, mentions, or keywords within subscribed tweets.
+
+Client
+1. Tweet
+2. Retweet
+3. Request for search by hashtag, mention, or search for a keyword only in subscribed tweets
+4. Display Feed
+
+Simulator
+1. Create N users
+2. Simulate following functions      
+    a. Subscribe     
+    b. Tweet     
+    c. Retweet      
+    d. Search       
 
 #### System Design Diagram 
 <p align="center">
