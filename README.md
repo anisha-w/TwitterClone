@@ -110,20 +110,20 @@ Simulator
 
 #### System Design Diagram 
 <p align="center">
-<img width="507" alt="system_design" src="https://github.com/anisha-w/TwitterClone/assets/36306448/333e3f73-9ea1-466e-85ad-7a39a34e52c1">
+    <img width="548" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/3e241b5c-2d65-4eaf-a890-b6fca7a01d90">
 </p>
 
 ####  Flow Diagrams 
 
 <p align="center">
-<img width="533" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/00a35444-2c64-4880-b31a-2ad5988d90a7">
-<img width="580" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/9f3fe648-c25d-423e-95af-e7def78fc2b0">
-<img width="625" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/ef7a33c2-dadb-49af-b614-5add2bc6963b">
-<img width="633" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/ab55fd12-3958-4f8f-93bc-029bfedd85f0">
-<img width="559" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/2547b3f3-f6f6-47ee-9925-ef1c9f13afb2">
+<img width="534" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/67da6e23-84aa-4370-840c-54e3a261f05a">
+<img width="580" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/25428ec4-67f5-4a33-931a-0212e54934c7">
+<img width="637" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/67773214-0bd6-4f76-915e-48bdfa6da022">
+<img width="610" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/c8919e0b-4bf9-40a5-9219-0e3b180b39d6">
+<img width="552" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/d63eab2f-6c0c-450b-9dda-56a0c1d4117d">
 </p>
 
 ## Output
 Below are sample outputs when executed through the simulator. 
 
-<img width="474" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/2f099287-5b97-499e-8420-3897735012b2">
+<img width="450" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/0c78102a-2667-4a97-a687-31c1bc197d52">
