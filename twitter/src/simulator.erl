@@ -53,16 +53,16 @@ search(ServerPID,Query,User,QueryKeyword)->
     receive
     {userMap,UserListMap}  ->
         UserID = maps:get(User, UserListMap),
+        if 
+            Query=="hashtag"->
+                UserID ! {search_hashtag,QueryKeyword};
+            Query=="mention"->
+                UserID ! {search_mention,QueryKeyword};
+            Query=="subscribed"->
+                UserID ! {search_subscribed,QueryKeyword}
+            end,
         ok
     end,
-    if 
-        Query=="hashtag"->
-            UserID ! {search_hashtag,QueryKeyword};
-        Query=="mention"->
-            UserID ! {search_mention,QueryKeyword};
-        Query=="subscribed"->
-            UserID ! {search_subscribed,QueryKeyword}
-        end,
     ok.
 
 % Invoking the retweet function simulates the action "User 1 retweeting a tweet"

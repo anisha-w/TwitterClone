@@ -7,12 +7,12 @@
 %  - Keep track of profiles that the client has subscribed to and the profiles that have taken their subscription. 
 
 -module(client).
--export([register/3,profileHandler/5,extractHashTag/1,extractMention/1,findSymbol/4]). % functions accessible from outside of the module
+-export([register/4,profileHandler/6,extractHashTag/1,extractMention/1,findSymbol/4]). % functions accessible from outside of the module
 
 % Start a new process (thread) for the new profile. Message the process_ID to server to keep track 
-register(ServerPID,Username,_Password)->
+register(ServerPID,HandlerPID,Username,_Password)->
 
-    PID = spawn_link(client,profileHandler,[ServerPID,Username,[],[],[]]), % create independent process for <username> profile 
+    PID = spawn_link(client,profileHandler,[ServerPID,HandlerPID,Username,[],[],[]]), % create independent process for <username> profile 
     ServerPID ! {newUser,Username,PID},
     PID. %Print statement
 
@@ -21,19 +21,31 @@ register(ServerPID,Username,_Password)->
 %  - SubscriberList : Users who have subscribed to current user's content
 %  - SelfTweetList : List of current user's tweets 
 %  - SubscribedTweetList : Users whom current user has subscribed. 
-profileHandler(ServerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList)->
+profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList)->
     %io:format("[DEBUG] Subscriber list ~p~n",[SubscriberList]),
     receive
 
+        {subscribeToUser2,User2}-> %Message from Handler to subscribe to user2's content
+            ServerPID! {getUserPIDforSubscribtion,self(),User2}, %Message to Server requesting for PID of user2 
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
+
+        {subscribtionPID,User2PID}-> %Message from server with PID of user2
+            User2PID! {subscriber,Username}, 
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
+
         % messages from simulator%
-        {subscribe,User2}->
-            profileHandler(ServerPID,Username,[User2]++SubscriberList,SelfTweetList,SubscribedTweetList);
+        %message from User1 who is now subscribed to User2
+        %{subscribe,User2}-> %ANISHA
+	    {subscriber,User2}->
+            profileHandler(ServerPID,HandlerPID,Username,[User2]++SubscriberList,SelfTweetList,SubscribedTweetList);
 
         % messages for server - client interaction%
         
         {newTweetFeed,User,TweetBody} ->
-            io:format("[~p FEED] ~p : ~p ~n",[Username,User,TweetBody]),
-            profileHandler(ServerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList++[{User,TweetBody}]);
+            io:format("\n\n [~p FEED] ~p : ~p ~n",[Username,User,TweetBody]),
+            io:format("Handler ~p and self ~p",[HandlerPID,self()]),
+            HandlerPID ! {updateFeed,{User,TweetBody}},
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList++[{User,TweetBody}]);
            
         {sendTweet,TweetBody}->
             ServerPID ! {tweet,Username,SubscriberList,TweetBody},
@@ -49,17 +61,18 @@ profileHandler(ServerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetLi
             % send message to mentions
             ServerPID ! {tweet,Username,MentionList,TweetBody},
 
-            profileHandler(ServerPID,Username,SubscriberList,SelfTweetList++[TweetBody],SubscribedTweetList);
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList++[TweetBody],SubscribedTweetList);
 
-        {retweet,TweetBody}->
+        {retweet,User,TweetBody}->
+           
             TweetPattern = fun(T) -> element(2,T) == TweetBody end,
             Found = lists:any(TweetPattern,SubscribedTweetList),
             if Found == true ->
-                ServerPID ! {tweet,Username,SubscriberList,TweetBody},
-                profileHandler(ServerPID,Username,SubscriberList,SelfTweetList++[TweetBody],SubscribedTweetList);
+                ServerPID ! {tweet,Username,SubscriberList,"[Retweet] "++User++":"++TweetBody},
+                profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList++[TweetBody],SubscribedTweetList);
                 true ->
                    io:format("Tweet not found ~n"),
-                   profileHandler(ServerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList),
+                   profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList),
                    ok
             end;
 
@@ -67,21 +80,41 @@ profileHandler(ServerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetLi
             
             HashTag = string:sub_string(QueryKeyword, 2),
             ServerPID ! {getHashTag,self(),HashTag},
-            profileHandler(ServerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
 
         {tweetByHashtag,HashTag,HashTagList}->
-            io:format("Tweets containing #~p : ~p ~n",[HashTag,HashTagList]);
+            HandlerPID ! {searchResult,{hashtag,HashTag,HashTagList}},
+            % io:format("Tweets containing ~p : ~p ~n",[HashTag,HashTagList]),
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
 
         {search_mention,QueryKeyword}->
             Mention = string:sub_string(QueryKeyword, 2),
             ServerPID ! {getMention,self(),Mention},
-            profileHandler(ServerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
 
         {tweetByMention,Mention,MentionList}->
-            io:format("Tweets containing @~p : ~p~n",[Mention,MentionList]),
-            profileHandler(ServerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList)
+            % io:format("Tweets containing @~p : ~p~n",[Mention,MentionList]),
+            HandlerPID ! {searchResult,{mention,Mention,MentionList}},
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
 
         
+        {search_subscribed,QueryKeyword}->
+
+            ServerPID ! {getUserPIDforSearchTweets,self(),QueryKeyword},
+
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
+
+        {searchUserPID,UserID2}->
+            UserID2 ! {getAllTweets,self()},
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
+
+        {getAllTweets,UserID1}->
+            UserID1 ! {allTweets,Username,SelfTweetList},
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList);
+        
+        {allTweets,SearchUser,TweetList}->
+            HandlerPID ! {allTweets,{SearchUser,TweetList}},
+            profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,SubscribedTweetList)
         end.
 
 extractHashTag(TweetBody)->
@@ -99,9 +132,10 @@ findSymbol(_SplitTweet,0,_Symbol,ResultList)->
 findSymbol(SplitTweet,Index,Symbol,ResultList)->
     
     Found = string:equal(Symbol, string:sub_string(lists:nth(Index,SplitTweet), 1, 1)),
-    if Found->
-        ReturnList = findSymbol(SplitTweet,Index-1,Symbol,ResultList++[string:sub_string(lists:nth(Index,SplitTweet), 2)]);
+
+    ReturnList = if Found->
+        findSymbol(SplitTweet,Index-1,Symbol,ResultList++[string:sub_string(lists:nth(Index,SplitTweet), 2)]);
     true->
-        ReturnList = findSymbol(SplitTweet,Index-1,Symbol,ResultList)
+        findSymbol(SplitTweet,Index-1,Symbol,ResultList)
     end,
     ReturnList.
