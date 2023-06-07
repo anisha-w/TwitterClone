@@ -10,7 +10,7 @@ The goal of this project is to create a Twitter-like engine along with a web int
     
 Part 1: 
 * Focuses on developing the backend of the twitter engine. 
-* Simulator engine is created that internally invokes the actions of a normal user like registering itself, subscribing to other users, sending tweet posts, and retweeting other users’ tweets. 
+* Simulator engine is developed that emulate multiple users and invokes the actions of a normal user like registering itself, subscribing to other users, sending tweet posts, and retweeting other users’ tweets. 
 
 Part 2 :
 * Integrate WebSockets to provide a web interface
@@ -24,11 +24,18 @@ Part 2 :
 *  Display the new tweets by subscribed users live (without querying).  
 *  Allow querying tweets subscribed to, tweets with specific hashtags, tweets in which the user is mentioned
 
-## System
-Language : Erlang 
-
 ## Web Inteface GUI
 
+
+https://github.com/anisha-w/TwitterClone/assets/36306448/e8e2ffe5-3b7b-4def-8b57-b1207203b67f
+
+
+#### Snapshot of feed
+<img width="1440" alt="Snapshot of feed" src="https://github.com/anisha-w/TwitterClone/assets/36306448/cd09db8c-2929-448a-b4a2-bcbb0c37c496">
+
+
+## System
+Language : Erlang 
 
 ## Installation and Execution
 
@@ -74,7 +81,7 @@ simulator:search(PID, "hashtag", "user4", "#topic"). % User4 Searching by Hashta
 Note : PID is a variable that stores the process id of the twitterserver (referred as the server). During initalization, the function start_server() returns the process id. Refer command {Link}
 
 ## Implementation
-TwitterClone is a system designed to mimic the functionality of Twitter. It follows the Actor model paradigm, where each user profile is treated as an independent actor referred to as the client. The system includes a main engine acting as a server that keeps track of user profile names and their associated process IDs. To create a realistic simulation of the Twitter engine, a simulator engine is implemented. The simulator replicates the actions performed on a regular Twitter platform and invokes the backend functions of the client actors to simulate different actions. This simulator is useful for measuring performance metrics and scaling out the Twitter engine by generating a large number of users in bulk. The backend engine is then integrated with a web interface. The web interface uses websockets to pass messages between the independent actors. 
+TwitterClone is a system designed to mimic the functionality of Twitter. It follows the **Actor model paradigm**, where each user profile is treated as an independent actor referred to as the client. The system includes a main engine acting as a server that keeps track of user profile names and their associated process IDs. To create a realistic simulation of the Twitter engine, a simulator engine is implemented. The simulator replicates the actions performed on a regular Twitter platform and invokes the backend functions of the client actors to simulate different actions. This simulator is useful for measuring performance metrics and scaling out the Twitter engine by generating a large number of users in bulk. The backend engine is then integrated with a web interface. The web interface uses websockets to pass messages between the independent actors. 
 
 ### Technology and Concepts 
 #### What is the actor model?
@@ -96,8 +103,9 @@ Simulator :
 
 Handler : An addition actor proecss is created for each client actor to handle the communication between the backend and frontend. 
 
-#### Webscokets and Cowboy server
-Websocket connection allows the server to send messages to the client irrespective of client sending a request. HTTP on the other hand only works with request response pairs. The server cannot send any messages to the client without a request.
+#### Websockets and Cowboy server
+Websocket connection allows the server to send messages to the client irrespective of client sending a request. HTTP on the other hand only works with request response pairs and so the server cannot send any messages to the client without a request using http.
+
 <p align="center">
 <img width="194" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/7c0c94de-91ac-4ea1-9916-b2e650010df1">
 </p>
@@ -115,15 +123,15 @@ Code snippets
 
 ### Web Interface Program flow 
  
-Open url -> localhost:8080/registerpage.html   
-Enter Details and click on register    
-_Program redirects to next page_    
-_HTTP request sent to create websocket connection_   
-_Server responds and websocket connection established_   
-User can now subscribe, tweet, retweet, search etc...   
-_User 1 subscribes to user 2_   
-_User 2 tweets “First tweet”_   
-User1’s feed is automatically updated with its subscripted user’s tweets   
+1) Open url -> localhost:8080/registerpage.html   
+2) Enter Details and click on register    
+    _Program redirects to next page_    
+    _HTTP request sent to create websocket connection_   
+    _Server responds and websocket connection established_   
+3) User can now subscribe, tweet, retweet, search etc...   
+    _User 1 subscribes to user 2_   
+    _User 2 tweets “First tweet”_   
+4) User1’s feed is automatically updated with its subscripted user’s tweets   
     
 ### System Design Diagram 
 <p align="center">
