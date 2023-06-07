@@ -14,8 +14,18 @@ server(UserListMap,HashTagMap,MentionMap)->
         {newUser,Username,Pid}->
             UserBufferMap = maps:put(Username,Pid,UserListMap),
             server(UserBufferMap,HashTagMap,MentionMap);
+        
+	{getUserPIDforSubscribtion,User1,User2} ->
+            UserID2 = maps:get(User2, UserListMap),
+            User1 ! {subscribtionPID,UserID2},
+            server(UserListMap,HashTagMap,MentionMap);
 
-        % Message Received: Send tweet to profiles in SubscriberList
+        {getUserPIDforSearchTweets,User1,User2} ->
+            UserID2 = maps:get(User2, UserListMap),
+            User1 ! {searchUserPID,UserID2},
+            server(UserListMap,HashTagMap,MentionMap);
+        
+	% Message Received: Send tweet to profiles in SubscriberList
         {tweet,Username,SubscriberList,Tweet}->
             lists:foreach(fun(P)-> maps:get(P,UserListMap) ! {newTweetFeed,Username,Tweet} end , SubscriberList),
             server(UserListMap,HashTagMap,MentionMap);
