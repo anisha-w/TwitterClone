@@ -238,6 +238,7 @@
             console.log("message recieved");
             let eventData = event.data;
             let [type,...dataextracted] = eventData.split('|');
+            clearSearchResults();
             if(type=="info")
                 alert(dataextracted);
             else if(type=="search")
@@ -281,6 +282,13 @@
             new_row.cells[1].id = "tweetBodySearch"+x.rows.length;
             
             x.appendChild(new_row);
+        }
+        function clearSearchResults(){
+            var x = document.getElementById('searchTable');
+            for(var i = document.getElementById("searchTable").rows.length; i > 1;i--)
+            {
+                document.getElementById("searchTable").deleteRow(i -1);
+            }
         }
         
     </script>
