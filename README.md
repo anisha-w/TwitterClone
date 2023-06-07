@@ -152,3 +152,6 @@ Code snippets
 Below are sample outputs when executed through the simulator. 
 
 <img width="450" alt="image" src="https://github.com/anisha-w/TwitterClone/assets/36306448/0c78102a-2667-4a97-a687-31c1bc197d52">
+
+## Complete Project Demo 
+https://www.youtube.com/watch?v=UzKbOn5s6aM
