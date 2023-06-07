@@ -218,7 +218,7 @@
             alert("User subscribed");
             dataObj = { "type" : "subscribeUser", "data":document.getElementById('subscribeUser').value};
             console.log("subscribe json body "+dataObj);
-            document.getElementById('searchBox').value="";
+            document.getElementById('subscribeUser').value="";
             ws.send(JSON.stringify(dataObj));
         }
         function retweet(){

@@ -59,7 +59,11 @@ profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList,Subscr
 
             lists:foreach(fun(M)->ServerPID ! {mention,Username,TweetBody,M} end,MentionList),
             % send message to mentions
-            ServerPID ! {tweet,Username,MentionList,TweetBody},
+            if length(MentionList) > 0 ->
+                ServerPID ! {tweet,Username,MentionList,TweetBody};
+            true ->
+                ok
+            end,
 
             profileHandler(ServerPID,HandlerPID,Username,SubscriberList,SelfTweetList++[TweetBody],SubscribedTweetList);
 
